@@ -2,6 +2,17 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const models = require("./models");
+const multer = require("multer");
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "uploads/");
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname);
+    },
+  }),
+});
 const product = require("./models/product");
 const port = 8082;
 
@@ -12,9 +23,8 @@ app.get("/products", (req, res) => {
   //method가 get인 /products의 요청이 왔을때 아래쪽 코드가 실행됨 익명함수
   models.Product.findAll({
     order: [["createdAt", "DESC"]],
-    attributes: ["id", "name", "price", "createdAt", "seller"],
+    attributes: ["id", "name", "price", "createdAt", "seller", "imageUrl"],
   })
-
     .then((result) => {
       console.log("PRODUCTS :" + result);
       res.send({
@@ -72,6 +82,14 @@ app.get("/products/:id", (req, res) => {
       console.log("error");
       res.send("에러 발생!!");
     });
+});
+
+app.post("/image", upload.single("image"), (req, res) => {
+  const file = req.file;
+  console.log(file);
+  res.send({
+    imageUrl: file.path,
+  });
 });
 
 app.listen(port, () => {

@@ -18,6 +18,7 @@ const port = 8082;
 
 app.use(express.json()); //json형식을 사용
 app.use(cors());
+app.use("/uploads", express.static("uploads"));
 
 app.get("/products", (req, res) => {
   //method가 get인 /products의 요청이 왔을때 아래쪽 코드가 실행됨 익명함수

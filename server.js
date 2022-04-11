@@ -20,11 +20,34 @@ app.use(express.json()); //json형식을 사용
 app.use(cors());
 app.use("/uploads", express.static("uploads"));
 
+app.get("/banners", (req, res) => {
+  models.Banner.findAll({
+    limit: 2,
+  })
+    .then((result) => {
+      res.send({
+        banners: result,
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send("배너 표시 에러 발생");
+    });
+});
+
 app.get("/products", (req, res) => {
   //method가 get인 /products의 요청이 왔을때 아래쪽 코드가 실행됨 익명함수
   models.Product.findAll({
     order: [["createdAt", "DESC"]],
-    attributes: ["id", "name", "price", "createdAt", "seller", "imageUrl"],
+    attributes: [
+      "id",
+      "name",
+      "price",
+      "createdAt",
+      "seller",
+      "imageUrl",
+      "soldout",
+    ],
   })
     .then((result) => {
       console.log("PRODUCTS :" + result);
@@ -92,6 +115,29 @@ app.post("/image", upload.single("image"), (req, res) => {
   res.send({
     imageUrl: file.path,
   });
+});
+
+app.post("/purchase/:id", (req, res) => {
+  const { id } = req.params;
+  models.Product.update(
+    {
+      soldout: 1,
+    },
+    {
+      where: {
+        id,
+      },
+    }
+  )
+    .then((result) => {
+      res.send({
+        result: true,
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send("결제 표시 에러가 발생했습니다");
+    });
 });
 
 app.listen(port, () => {

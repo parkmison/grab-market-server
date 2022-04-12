@@ -35,7 +35,6 @@ app.get("/banners", (req, res) => {
 });
 
 app.get("/products", (req, res) => {
-  //method가 get인 /products의 요청이 왔을때 아래쪽 코드가 실행됨 익명함수
   models.Product.findAll({
     order: [["createdAt", "DESC"]],
     attributes: [
@@ -66,13 +65,7 @@ app.post("/products", (req, res) => {
   if (!name || !description || !price || !seller || !imageUrl) {
     res.status(400).send("空になりなした。");
   }
-  models.Product.create({
-    name,
-    description,
-    price,
-    seller,
-    imageUrl,
-  })
+  models.Product.create({ name, description, price, seller, imageUrl })
     .then((result) => {
       console.log("상품 생성 결과 : ", result);
       res.send({
@@ -83,14 +76,11 @@ app.post("/products", (req, res) => {
       console.error(error);
       res.status(400).send("상품 업로드에 문제가 발생했습니다");
     });
-  res.send({
-    body,
-  });
 });
 
 app.get("/products/:id", (req, res) => {
   const params = req.params;
-  const { id, eventId } = params;
+  const { id } = params;
   models.Product.findOne({
     where: {
       id: id,

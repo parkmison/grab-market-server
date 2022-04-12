@@ -13,7 +13,6 @@ const upload = multer({
     },
   }),
 });
-const product = require("./models/product");
 const port = process.env.PORT || 8082;
 
 app.use(express.json()); //json형식을 사용
